@@ -16,7 +16,7 @@ Route::get('/', function () {
 });
 
 Route::get('/image', function() {
-    $path = storage_path() . '/app/images/40e93034a4ad6ee6b7eab1fe389195ad.png';
+    $path = storage_path() . '/app/public/images/prueba2.png';
 
     $file = File::get($path);
     $type = File::mimeType($path);

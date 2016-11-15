@@ -18,9 +18,33 @@
         <title>FPD</title>
     </head>
     <body>
-        <div id="fpd">
+        <div id="fpd" class="fpd-container fpd-topbar fpd-hidden-tablets">
             <div class="fpd-product" title="Titulo" data-thumbnail="http://bit.ly/2fiDvEl">
-                
+                <img src= {{ URL::to('images/pulsera.png') }}
+                     title="Pulsera" 
+                     data-parameters=
+                        '{"left": 325, 
+                          "top": 329, 
+                          "price": 20, 
+                          "draggable": false,
+                          "removable": false,
+                          "autoCenter": true,
+                          "zChangeable": false,
+                          "z": 1 
+                         }'
+                />
+               <!--  <span title="Any Text" 
+                      data-parameters=
+                        '{"boundingBox": "Pulsera", 
+                        "removable": true, 
+                        "draggable": true, 
+                        "rotatable": true, 
+                        "resizable": true, 
+                        "outOfBoundaryColor": "#FFFF00",
+                        "autocenter": true,
+                        "z": -1,
+                        "colors": "#000000"}'
+                >Default Text</span> -->
             </div>
         </div>
 
@@ -55,8 +79,8 @@
 
                 var $fpd = $('#fpd'),
                 pluginOpts = {
-                    stageWidth: 1200, 
-                    stageHeight: 800, 
+                    stageWidth: 1000, 
+                    stageHeight: 400, 
                     langJSON: false,
                     actions:  {
                         'top': ['download', 'snap', 'preview-lightbox'],
@@ -71,7 +95,8 @@
                         draggable: true,
                         rotatable: true,
                         autoCenter: true,
-                        boundingBox: "Base"
+                        boundingBox: "Base",
+                        toolbarPlacement: "inside-top",
                     },
                     customImageParameters: {
                         draggable: true,
@@ -80,8 +105,10 @@
                         rotatable: true,
                         colors: '#000',
                         autoCenter: true,
-                        boundingBox: "Base"
+                        boundingBox: "Pulsera"
                     },
+                    outOfBoundaryColor: "#FF0000",
+                    toolbarPlacement: "inside-top",
                 };
 
                 var yourDesigner = new FancyProductDesigner($fpd, pluginOpts);
@@ -92,7 +119,7 @@
                     yourDesigner.getProductDataURL(function(dataURL) {
                         $.post("save", { base64_image:  dataURL}, function(data) {
                             if(data) {
-                                data.epa;
+                                data.message;
                             }
                             else {
                                 // console.log('super peo');

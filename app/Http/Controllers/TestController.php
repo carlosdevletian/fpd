@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Imagick;
 
 //Paquete Colores
 use League\ColorExtractor\Color;
@@ -33,7 +34,18 @@ class TestController extends Controller
 
         file_put_contents($destinationPath . '/' . $filename, $decoded);
 
-        $path = Storage::url('40e93034a4ad6ee6b7eab1fe389195ad.png');
+        // $path = Storage::url('prueba.png');
+
+        // quantizeImage($imagePath, $numberColors, $colorSpace, $treeDepth, $dither) 
+        $imagick = new \Imagick( $destinationPath . '/' . $filename);
+        $imagick->quantizeImage(8, Imagick::COLORSPACE_RGB, 0, false, false);
+        $imagick->setImageFormat('png');
+        $imagick->writeImage($destinationPath . '/prueba2.png');
+        // header("Content-Type: image/png");
+        // echo $imagick;
+
+
+        
 
 
         // $image = file_put_contents('img.png', $decoded);
@@ -42,37 +54,30 @@ class TestController extends Controller
 
         //send result - the url of the png or 0
         return response()->json([
-                'epa' => 'joe',
-                'path' => $path
+            'epa' => 'joe'
         ]);
     }
 
     public function colors()
     {
+        $path = storage_path() . '/app/public/images/prueba2.png';
         //https://github.com/thephpleague/color-extractor  Esta es la pagina del paquete
 
-        //Imagenes de prueba en carpeta images van de la a a la d
-        $palette = Palette::fromFilename('images/b.png');
+        $palette = Palette::fromFilename($path);
 
         // Si habilitas este foreach te muestra los colores por nombre que tiene la imagen
+        $colors = [];
+        $total = 0;
         foreach($palette as $color => $count) {
             // colors are represented by integers and converted to hex
-            // echo Color::fromIntToHex($color), ': ', $count, "\n";
+            $colors[] = [ 
+                'color' => Color::fromIntToHex($color),
+                'quantity' => $count
+            ];
+            $total += $count;
         }
-
-        // Devuelve los colores mas usados
-        $topFive = $palette->getMostUsedColors(5);
-
-        //Creo una imagen nueva en base a la anterior
-        $im = imagecreatefrompng('images/b.png');
-
-        //Limito la imagen a 10 colores
-        imagetruecolortopalette($im, false, 10);
-
-        // Se guarda la imagen (se ve terrible)
-        imagepng($im, 'newimage.png');
-
-        // imprimo la cantidad de colores y el top five de colores (Estan en int, hay que pasarlos a hex)
-        dd('Number of colors: '. count($palette), $topFive);
+     
+        return view('colors', compact('palette', 'colors', 'total'));
+        // dd('Number of colors: '. count($palette), $topFive);
     }
 }
