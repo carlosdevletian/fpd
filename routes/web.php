@@ -27,3 +27,5 @@ Route::get('/image', function() {
 })->name('image');
 
 Route::post('/save', 'TestController@save');
+
+Route::get('/colors', 'TestController@colors');
