@@ -20,20 +20,21 @@
     <body>
         <div id="fpd" class="fpd-container fpd-topbar fpd-hidden-tablets">
             <div class="fpd-product" title="Titulo" data-thumbnail="http://bit.ly/2fiDvEl">
-                <img src= {{ URL::to('images/pulsera.png') }}
-                     title="Pulsera" 
+                <img src= "{{ URL::to('images/pulsera.png') }}"
+                     title="Pulsera"
                      data-parameters=
                         '{"left": 325, 
-                          "top": 329, 
-                          "price": 20, 
-                          "draggable": false,
-                          "removable": false,
-                          "autoCenter": true,
-                          "zChangeable": false,
-                          "z": 1 
-                         }'
+                        "top": 329, 
+                        "price": 20, 
+                        "draggable": false,
+                        "removable": false,
+                        "autoCenter": true,
+                        "zChangeable": false,
+                        "colors": "#ffffff,#e3e3e3,#000000,#ffff80,#ff6666,#00ff80",
+                        "z": 1 
+                        }'
                 />
-               <!--  <span title="Any Text" 
+                <span title="Any Text" 
                       data-parameters=
                         '{"boundingBox": "Pulsera", 
                         "removable": true, 
@@ -43,17 +44,15 @@
                         "outOfBoundaryColor": "#FFFF00",
                         "autocenter": true,
                         "z": -1,
-                        "colors": "#000000"}'
-                >Default Text</span> -->
+                        "colors": "#000000",
+                        "textPlaceholder": "Your text here"}'
+                ></span>
             </div>
         </div>
 
         <button id="crear">
             CREAR IMAGEN
         </button>
-
-        <image src="{{ route('image') }}"></image>
-
 
        <script
             src="https://code.jquery.com/jquery-1.12.4.min.js"
@@ -79,8 +78,8 @@
 
                 var $fpd = $('#fpd'),
                 pluginOpts = {
-                    stageWidth: 1000, 
-                    stageHeight: 400, 
+                    stageWidth: 900, 
+                    stageHeight: 500, 
                     langJSON: false,
                     actions:  {
                         'top': ['download', 'snap', 'preview-lightbox'],
@@ -95,20 +94,21 @@
                         draggable: true,
                         rotatable: true,
                         autoCenter: true,
-                        boundingBox: "Base",
+                        boundingBox: "Pulsera",
                         toolbarPlacement: "inside-top",
+                        colors: "#e3e3e3,#000000,#ffff80,#ff6666,#00ff80",
                     },
                     customImageParameters: {
                         draggable: true,
                         removable: true,
                         resizable: true,
                         rotatable: true,
-                        colors: '#000',
                         autoCenter: true,
                         boundingBox: "Pulsera"
                     },
                     outOfBoundaryColor: "#FF0000",
                     toolbarPlacement: "inside-top",
+                    fonts: ['Arial', 'Helvetica', 'OperatorMono-Medium'],
                 };
 
                 var yourDesigner = new FancyProductDesigner($fpd, pluginOpts);
@@ -119,14 +119,20 @@
                     yourDesigner.getProductDataURL(function(dataURL) {
                         $.post("save", { base64_image:  dataURL}, function(data) {
                             if(data) {
-                                data.message;
+                                console.log(data.message);
                             }
                             else {
                                 // console.log('super peo');
                             }
                         });    
-                    });
+                    }, 'transparent');
 
+                    var productViews = yourDesigner.getProduct();
+                    //loop through all views
+                    for(var i=0; i < productViews.length; ++i) {
+                        //output all single view objects
+                        console.log(productViews[i]);
+                    }
 
 
                     var image = yourDesigner.createImage(false, false, 'transparent',{ format : 'pdf' });

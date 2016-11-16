@@ -2,82 +2,120 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Imagick;
-
-//Paquete Colores
+use Illuminate\Http\Request;
 use League\ColorExtractor\Color;
-use League\ColorExtractor\ColorExtractor;
 use League\ColorExtractor\Palette;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use League\ColorExtractor\ColorExtractor;
 
 class TestController extends Controller
 {
-
+    /**
+     * Creates the image from the request, filters it down to the desirable quantity of colors and stores it in the storage folder.
+     *
+     * @return void
+     */
     public function save(Request $request)
     {
-        $str = $request['base64_image'];
-        // Se selecciona la parte de la imagen del string recibido
-        $base64 = substr($str, strpos($str, ",")+1);
+        $directory = $this->createDirectories();
+        $image = $this->createImageFromBase64($request['base64_image']);
+        $destinationPath = $this->storeImage($directory, $image);
+        $this->filterImage(8, $destinationPath);
 
-        //decode base64 string
-        $decoded = base64_decode($base64);
-
-        $destinationPath = storage_path('app/public/images');
-
-        if (!is_dir($destinationPath))
-        {
-            mkdir($destinationPath, 0777, true);
-        }
-
-        $filename = md5($decoded).'.png';
-
-        file_put_contents($destinationPath . '/' . $filename, $decoded);
-
-        // $path = Storage::url('prueba.png');
-
-        // quantizeImage($imagePath, $numberColors, $colorSpace, $treeDepth, $dither) 
-        $imagick = new \Imagick( $destinationPath . '/' . $filename);
-        $imagick->quantizeImage(8, Imagick::COLORSPACE_RGB, 0, false, false);
-        $imagick->setImageFormat('png');
-        $imagick->writeImage($destinationPath . '/prueba2.png');
-        // header("Content-Type: image/png");
-        // echo $imagick;
-
-
-        
-
-
-        // $image = file_put_contents('img.png', $decoded);
-        // //create png from decoded base 64 string and save the image in the images folder
-        // $path = $image->store('images');
-
-        //send result - the url of the png or 0
         return response()->json([
-            'epa' => 'joe'
+            'message' => 'Image successfully generated'
         ]);
     }
 
+    /**
+     * Searches through the images directory and specifies the quantity of colors
+     * for each image in that folder.
+     *
+     * @return void
+     */
     public function colors()
     {
-        $path = storage_path() . '/app/public/images/prueba2.png';
-        //https://github.com/thephpleague/color-extractor  Esta es la pagina del paquete
-
-        $palette = Palette::fromFilename($path);
-
-        // Si habilitas este foreach te muestra los colores por nombre que tiene la imagen
-        $colors = [];
-        $total = 0;
-        foreach($palette as $color => $count) {
-            // colors are represented by integers and converted to hex
-            $colors[] = [ 
-                'color' => Color::fromIntToHex($color),
-                'quantity' => $count
+        
+        $images = File::allFiles(storage_path('app/public/images'));
+        $array = [];
+        foreach ($images as $image) {
+            $image = (string) $image;
+            $palette = Palette::fromFilename($image);
+            $colors = [];
+            $total = 0;
+            foreach($palette as $color => $count) {
+                $colors[] = [ 
+                    'color' => Color::fromIntToHex($color),
+                    'quantity' => $count
+                ];
+                $total += $count;
+            }
+            $array[] = [
+                'palette' => $palette,
+                'colors' => $colors,
+                'total' => $total,
+                'path' => File::name($image)
             ];
-            $total += $count;
         }
-     
-        return view('colors', compact('palette', 'colors', 'total'));
-        // dd('Number of colors: '. count($palette), $topFive);
+
+        return view('colors', compact('array'));
+    }
+
+    /**
+     * Uses Imagick to reduce the given image to the specified quantity of colors.
+     *
+     * @return void
+     */
+    private function filterImage($colorQuantity, $destinationPath)
+    {
+        $imagick = new \Imagick( $destinationPath );
+        $imagick->quantizeImage($colorQuantity, Imagick::COLORSPACE_RGB, 0, true, false);
+        // $imagick->posterizeImage(2, false);
+        $imagick->setImageFormat('png');
+        $imagick->writeImage($destinationPath);
+    }
+
+     /**
+     * Create the directories for the files.
+     *
+     * @return void
+     */
+    protected function createDirectories()
+    {
+        $path = storage_path('app/public/images');
+        if (! is_dir($path) ) {
+            return mkdir($path, 0777, true);
+        }
+        return $path;
+    }
+
+    /**
+     * Gets the encoded base64 string from the request and decodes it.
+     *
+     * @return created image
+     */
+    protected function createImageFromBase64($base64String)
+    {
+         // Se selecciona la parte de la imagen del string recibido
+        $encoded = substr($base64String, strpos($base64String, ",")+1);
+
+        return base64_decode($encoded);
+    }
+
+    /**
+     * Stores the given image in the specified directory.
+     *
+     * @return string $filepath
+     */
+    protected function storeImage($directory, $image)
+    {
+        $filename = md5($image) . '.png';
+        $filepath = $directory . '/' . $filename;
+
+        file_put_contents($filepath, $image);
+
+        return $filepath;
     }
 }

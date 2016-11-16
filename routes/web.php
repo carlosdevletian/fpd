@@ -15,8 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/image', function() {
-    $path = storage_path() . '/app/public/images/prueba2.png';
+Route::get('/image/{filename}', function($filename) {
+    $path = storage_path() . '/app/public/images/' . $filename . '.png';
 
     $file = File::get($path);
     $type = File::mimeType($path);
@@ -25,6 +25,25 @@ Route::get('/image', function() {
     $response->header("Content-Type", $type);
     return $response;
 })->name('image');
+
+Route::get('/filter', function() {
+    $imagePath = public_path('images/pepsi.png');
+    $imagick = new \Imagick($imagePath);
+    $matrix = [
+        [0, 0, 0],
+        [0,  5,  0],
+        [-1, 0, -1],
+    ];
+     
+    $kernel = \ImagickKernel::fromMatrix($matrix);
+    $strength = 0.5;
+    $kernel->scale($strength, \Imagick::NORMALIZE_KERNEL_VALUE);
+    $kernel->addUnityKernel(1 - $strength);
+ 
+    $imagick->filter($kernel);
+    header("Content-Type: image/jpg");
+    echo $imagick->getImageBlob();
+});
 
 Route::post('/save', 'TestController@save');
 

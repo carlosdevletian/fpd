@@ -18,14 +18,17 @@
         <title>FPD</title>
     </head>
     <body>
-        <div>Colores: {{ count($palette) }}</div>
+        @foreach($array as $image)
+            <div>
+                <image src="{{ route('image', ['filename' => $image['path']]) }}" style="border: 1px solid black"></image>
+                @foreach($image['colors'] as $color)
 
-        @foreach($colors as $color)
-            <div style="background-color: {{ $color['color'] }}; width: 50px; height: 50px; border: 1px solid black; display: inline-block"></div>
-            <p style="display: inline-block">{{ number_format(($color['quantity']/$total)*100, 2) }}%</p>
+                    <div style="background-color: {{ $color['color'] }}; width: 50px; height: 50px; border: 1px solid black; display: inline-block"></div>
+                    <p style="display: inline-block">{{ number_format(($color['quantity']/$image['total'])*100, 2) }}%</p>
+                @endforeach
+            </div>
         @endforeach
-
-        <image src="{{ route('image') }}" style="border: 1px solid black"></image>
+        
 
         
 
