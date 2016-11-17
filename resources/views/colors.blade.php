@@ -24,7 +24,7 @@
                 @foreach($image['colors'] as $color)
 
                     <div style="background-color: {{ $color['color'] }}; width: 50px; height: 50px; border: 1px solid black; display: inline-block"></div>
-                    <p style="display: inline-block">{{ number_format(($color['quantity']/$image['total'])*100, 2) }}%</p>
+                    
                 @endforeach
             </div>
         @endforeach
