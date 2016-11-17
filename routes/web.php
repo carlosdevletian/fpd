@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@home');
 
 Route::get('/image/{filename}', function($filename) {
     $path = storage_path() . '/app/public/images/' . $filename . '.png';

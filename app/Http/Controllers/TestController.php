@@ -37,7 +37,7 @@ class TestController extends Controller
      */
     public function colors()
     {
-        
+
         $images = File::allFiles(storage_path('app/public/images'));
         $array = [];
         foreach ($images as $image) {
@@ -60,7 +60,7 @@ class TestController extends Controller
             ];
         }
 
-        return view('colors', compact('array'));
+        return view('colors', compact('array', 'common_colors'));
     }
 
     /**
@@ -72,9 +72,12 @@ class TestController extends Controller
     {
         $imagick = new \Imagick( $destinationPath );
         $imagick->quantizeImage($colorQuantity, Imagick::COLORSPACE_RGB, 0, true, false);
+        var_dump('sí quantizó');
         // $imagick->posterizeImage(2, false);
         $imagick->setImageFormat('png');
-        $imagick->writeImage($destinationPath);
+        $image_name = 'F' . substr($destinationPath, 54);
+        $image_path = substr($destinationPath, 0, -38);
+        $imagick->writeImage($image_path . $image_name);
     }
 
      /**
@@ -111,7 +114,7 @@ class TestController extends Controller
      */
     protected function storeImage($directory, $image)
     {
-        $filename = md5($image) . '.png';
+        $filename = 'O-' . md5($image) . '.png';
         $filepath = $directory . '/' . $filename;
 
         file_put_contents($filepath, $image);

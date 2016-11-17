@@ -23,17 +23,26 @@
                 <img src= "{{ URL::to('images/pulsera.png') }}"
                      title="Pulsera"
                      data-parameters=
-                        '{"left": 325, 
+                        '{"left": 340, 
                         "top": 329, 
-                        "price": 20, 
-                        "draggable": false,
+                        "draggable": true,
                         "removable": false,
                         "autoCenter": true,
                         "zChangeable": false,
                         "colors": "#ffffff,#e3e3e3,#000000,#ffff80,#ff6666,#00ff80",
-                        "z": 1 
+                        "z": 2 
                         }'
                 />
+                <!-- <img src= "{{ URL::to('images/Backdrop.png') }}"
+                     title="Pulsera"
+                     data-parameters=
+                        '{"draggable": false,
+                        "removable": false,
+                        "autoCenter": true,
+                        "zChangeable": false,
+                        "z": 1 
+                        }'
+                /> -->
                 <span title="Any Text" 
                       data-parameters=
                         '{"boundingBox": "Pulsera", 
@@ -44,10 +53,19 @@
                         "outOfBoundaryColor": "#FFFF00",
                         "autocenter": true,
                         "z": -1,
-                        "colors": "#000000",
-                        "textPlaceholder": "Your text here"}'
+                        "colors": "#000000"}'
                 ></span>
             </div>
+
+            <div class="fpd-design">
+                    <!-- CATEGORÍA 1 PARA LOS DISEÑOS -->
+                    <div class="fpd-category" title="Icons" data-thumbnail="http://bit.ly/2e6t2Ow"> 
+                    @foreach($images as $image)
+                        <img src="{{ $image }}" title="Agenda" data-parameters='{"zChangeable": true, "left": 215, "top": 200, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "boundingBox": "Pulsera", "autoCenter": true}' />
+                    @endforeach
+                    </div>
+            </div>
+
         </div>
 
         <button id="crear">
@@ -104,7 +122,8 @@
                         resizable: true,
                         rotatable: true,
                         autoCenter: true,
-                        boundingBox: "Pulsera"
+                        boundingBox: "Pulsera",
+                        z: -1,
                     },
                     outOfBoundaryColor: "#FF0000",
                     toolbarPlacement: "inside-top",
